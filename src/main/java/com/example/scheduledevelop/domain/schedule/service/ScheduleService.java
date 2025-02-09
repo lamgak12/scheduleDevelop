@@ -5,7 +5,11 @@ import com.example.scheduledevelop.domain.schedule.dto.ScheduleResponseDto;
 import com.example.scheduledevelop.domain.schedule.entity.Schedule;
 import com.example.scheduledevelop.domain.schedule.repository.ScheduleRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -16,5 +20,12 @@ public class ScheduleService {
         Schedule schedule = new Schedule(dto.getWriter(), dto.getTitle(), dto.getContents());
         Schedule savedschedule = scheduleRepository.save(schedule);
         return new ScheduleResponseDto(savedschedule);
+    }
+
+    public List<ScheduleResponseDto> findAll() {
+        return scheduleRepository.findAll()
+                .stream()
+                .map(ScheduleResponseDto::new)
+                .collect(Collectors.toList());
     }
 }
