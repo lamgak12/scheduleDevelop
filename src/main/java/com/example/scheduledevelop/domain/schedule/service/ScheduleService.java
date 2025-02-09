@@ -60,4 +60,10 @@ public class ScheduleService {
 
         return new ScheduleResponseDto(schedule);
     }
+
+    public void deleteSchedule(Long id) {
+        Schedule schedule = scheduleRepository.findScheduleById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 일정을 찾을 수 없습니다."));
+        scheduleRepository.delete(schedule);
+    }
 }
