@@ -23,8 +23,14 @@ public class ScheduleController {
     }
 
     @GetMapping
-    private ResponseEntity<List<ScheduleResponseDto>> findAll(){
+    public ResponseEntity<List<ScheduleResponseDto>> findAll(){
         List<ScheduleResponseDto> responseDtos = scheduleService.findAll();
         return new ResponseEntity<>(responseDtos, HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ScheduleResponseDto> findScheduleById(@PathVariable Long id){
+        ScheduleResponseDto responseDto = scheduleService.findScheduleById(id);
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 }
