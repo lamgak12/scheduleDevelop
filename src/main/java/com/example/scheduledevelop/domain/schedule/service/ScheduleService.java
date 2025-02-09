@@ -2,6 +2,7 @@ package com.example.scheduledevelop.domain.schedule.service;
 
 import com.example.scheduledevelop.domain.schedule.dto.ScheduleCreateRequestDto;
 import com.example.scheduledevelop.domain.schedule.dto.ScheduleResponseDto;
+import com.example.scheduledevelop.domain.schedule.dto.ScheduleUpdateRequestDto;
 import com.example.scheduledevelop.domain.schedule.entity.Schedule;
 import com.example.scheduledevelop.domain.schedule.repository.ScheduleRepository;
 import lombok.RequiredArgsConstructor;
@@ -39,5 +40,24 @@ public class ScheduleService {
         return  new ScheduleResponseDto(schedule);
     }
 
+    @Transactional
+    public ScheduleResponseDto updateSchedule(Long id, ScheduleUpdateRequestDto dto){
+        Schedule schedule = scheduleRepository.findScheduleById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 일정을 찾을 수 없습니다."));
+        // 기존의 제목과 내용을 가져옴
+        String updatedTitle = schedule.getTitle();
+        String updatedContents = schedule.getContents();
+        // 제목이 있으면 변경
+        if(dto.getTitle() != null && !dto.getTitle().trim().isEmpty()){
+            updatedTitle = dto.getTitle();
+        }
+        // 내용이 있으면 변경
+        if (dto.getContents() != null && !dto.getContents().trim().isEmpty()) {
+            updatedContents = dto.getContents();
+        }
+        // 업데이트 실행
+        schedule.update(updatedTitle, updatedContents);
 
+        return new ScheduleResponseDto(schedule);
+    }
 }
