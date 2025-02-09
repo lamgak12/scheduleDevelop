@@ -38,5 +38,3 @@ out/
 
 ### .env ###
 .env
-### 임시 ###
-src/main/java/com/example/scheduledevelop/domain
