@@ -17,15 +17,15 @@ public class ScheduleController {
     private final ScheduleService scheduleService;
 
     @PostMapping
-    public ResponseEntity<ScheduleResponseDto> save(@RequestBody ScheduleCreateRequestDto requestDto){
-        ScheduleResponseDto responseDto = scheduleService.save(requestDto);
+    public ResponseEntity<ScheduleResponseDto> createSchedule(@RequestBody ScheduleCreateRequestDto requestDto){
+        ScheduleResponseDto responseDto = scheduleService.createSchedule(requestDto);
         return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
     }
 
     @GetMapping
-    public ResponseEntity<List<ScheduleResponseDto>> findAll(){
-        List<ScheduleResponseDto> responseDtos = scheduleService.findAll();
-        return new ResponseEntity<>(responseDtos, HttpStatus.OK);
+    public ResponseEntity<List<ScheduleResponseDto>> findAllSchedules(){
+        List<ScheduleResponseDto> schedules = scheduleService.findAllSchedules();
+        return new ResponseEntity<>(schedules, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
