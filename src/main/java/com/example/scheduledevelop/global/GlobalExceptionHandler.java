@@ -1,4 +1,4 @@
-package com.example.scheduledevelop.domain.global;
+package com.example.scheduledevelop.global;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

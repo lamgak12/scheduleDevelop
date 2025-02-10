@@ -1,4 +1,4 @@
-package com.example.scheduledevelop.domain.global;
+package com.example.scheduledevelop.global;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
