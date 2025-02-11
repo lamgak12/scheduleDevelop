@@ -25,6 +25,9 @@ public class User extends BaseEntity {
         this.email = email;
         this.password = password;
     }
-    // patch : localhost:8080/users/1
-    // patch : localhost:8080/users/1
+
+    public void update(String newUsername, String newEmail) {
+        this.username = newUsername;
+        this.email = newEmail;
+    }
 }

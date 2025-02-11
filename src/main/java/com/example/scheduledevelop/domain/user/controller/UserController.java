@@ -2,6 +2,7 @@ package com.example.scheduledevelop.domain.user.controller;
 
 import com.example.scheduledevelop.domain.user.dto.UserCreateRequestDto;
 import com.example.scheduledevelop.domain.user.dto.UserResponseDto;
+import com.example.scheduledevelop.domain.user.dto.UserUpdateRequestDto;
 import com.example.scheduledevelop.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -36,5 +37,14 @@ public class UserController {
     ) {
         UserResponseDto responseDto = userService.findUserById(id);
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<UserResponseDto> updateUser(
+            @PathVariable Long id,
+            @RequestBody UserUpdateRequestDto requestDto
+            ){
+        UserResponseDto responseDto = userService.updateUser(id, requestDto);
+      return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 }
