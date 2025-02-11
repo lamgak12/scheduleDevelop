@@ -1,6 +1,7 @@
 package com.example.scheduledevelop.domain.user.service;
 
 import com.example.scheduledevelop.domain.user.dto.UserCreateRequestDto;
+import com.example.scheduledevelop.domain.user.dto.UserPasswordUpdateRequestDto;
 import com.example.scheduledevelop.domain.user.dto.UserResponseDto;
 import com.example.scheduledevelop.domain.user.dto.UserUpdateRequestDto;
 import com.example.scheduledevelop.domain.user.entity.User;
@@ -25,6 +26,7 @@ public class UserService {
         return new UserResponseDto(savedUser);
     }
 
+    @Transactional(readOnly = true)
     public List<UserResponseDto> findAllUsers() {
        return userRepository.findAll()
                .stream()
@@ -32,6 +34,7 @@ public class UserService {
                .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public UserResponseDto findUserById(Long id) {
         User findUser = userRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 유저를 찾을 수 없습니다."));
@@ -53,5 +56,18 @@ public class UserService {
         }
         user.update(newUsername, newEmail);
         return new UserResponseDto(user);
+    }
+
+    @Transactional
+    public void updatePassword(Long id, String email, String oldPassword, String newPassword) {
+        User findUser = userRepository.findUserById(id)
+                .filter(user -> user.getEmail().equals(email))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 사용자를 찾을 수 없습니다."));
+
+        if(!findUser.getPassword().equals(oldPassword)){
+            System.out.println("이게 null이라고?" + oldPassword);
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
+        }
+        findUser.updatePassword(newPassword);
     }
 }

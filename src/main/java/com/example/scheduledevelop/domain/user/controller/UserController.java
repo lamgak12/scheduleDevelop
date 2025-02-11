@@ -1,6 +1,7 @@
 package com.example.scheduledevelop.domain.user.controller;
 
 import com.example.scheduledevelop.domain.user.dto.UserCreateRequestDto;
+import com.example.scheduledevelop.domain.user.dto.UserPasswordUpdateRequestDto;
 import com.example.scheduledevelop.domain.user.dto.UserResponseDto;
 import com.example.scheduledevelop.domain.user.dto.UserUpdateRequestDto;
 import com.example.scheduledevelop.domain.user.service.UserService;
@@ -46,5 +47,14 @@ public class UserController {
             ){
         UserResponseDto responseDto = userService.updateUser(id, requestDto);
       return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
+
+    @PatchMapping("/{id}/password")
+    public ResponseEntity<Void>updateUserPassword(
+        @PathVariable Long id,
+        @RequestBody UserPasswordUpdateRequestDto requestDto
+    ){
+        userService.updatePassword(id, requestDto.getEmail(), requestDto.getOldPassword(), requestDto.getNewPassword());
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

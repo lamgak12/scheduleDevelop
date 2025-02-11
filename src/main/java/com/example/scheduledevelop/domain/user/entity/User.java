@@ -30,4 +30,8 @@ public class User extends BaseEntity {
         this.username = newUsername;
         this.email = newEmail;
     }
+
+    public void updatePassword(String password) {
+        this.password = password;
+    }
 }
