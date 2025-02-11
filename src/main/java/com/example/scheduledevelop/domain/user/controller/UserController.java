@@ -57,4 +57,12 @@ public class UserController {
         userService.updatePassword(id, requestDto.getEmail(), requestDto.getOldPassword(), requestDto.getNewPassword());
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void>deleteUser(
+            @PathVariable Long id
+    ){
+        userService.deleteUser(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 }

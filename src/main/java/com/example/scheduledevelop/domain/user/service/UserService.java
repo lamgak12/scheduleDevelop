@@ -70,4 +70,10 @@ public class UserService {
         }
         findUser.updatePassword(newPassword);
     }
+
+    public void deleteUser(Long id) {
+        User user = userRepository.findUserById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 사용자를 찾을 수 없습니다."));
+        userRepository.delete(user);
+    }
 }
