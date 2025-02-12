@@ -3,6 +3,7 @@ package com.example.scheduledevelop.domain.user.controller;
 import com.example.scheduledevelop.domain.user.dto.*;
 import com.example.scheduledevelop.domain.user.service.UserService;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +19,7 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<UserResponseDto> createUser(
-            @RequestBody UserCreateRequestDto requestDto
+           @Valid @RequestBody UserCreateRequestDto requestDto
     ){
      UserResponseDto responseDto  = userService.createUser(requestDto);
       return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
@@ -41,7 +42,7 @@ public class UserController {
     @PatchMapping("/{id}")
     public ResponseEntity<UserResponseDto> updateUser(
             @PathVariable Long id,
-            @RequestBody UserUpdateRequestDto requestDto,
+           @Valid @RequestBody UserUpdateRequestDto requestDto,
             HttpSession session
             ){
         UserResponseDto responseDto = userService.updateUser(id, session, requestDto);
@@ -51,7 +52,7 @@ public class UserController {
     @PatchMapping("/{id}/password")
     public ResponseEntity<Void>updateUserPassword(
         @PathVariable Long id,
-        @RequestBody UserPasswordUpdateRequestDto requestDto,
+      @Valid @RequestBody UserPasswordUpdateRequestDto requestDto,
         HttpSession session
     ){
         userService.updatePassword(id, session, requestDto.getOldPassword(), requestDto.getNewPassword());
@@ -61,7 +62,7 @@ public class UserController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void>deleteUser(
             @PathVariable Long id,
-            @RequestBody UserDeleteRequestDto requestDto,
+          @Valid @RequestBody UserDeleteRequestDto requestDto,
             HttpSession session
 
     ){

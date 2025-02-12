@@ -1,5 +1,6 @@
 package com.example.scheduledevelop.domain.user.service;
 
+import com.example.scheduledevelop.domain.config.PasswordEncoder;
 import com.example.scheduledevelop.domain.schedule.entity.Schedule;
 import com.example.scheduledevelop.domain.schedule.repository.ScheduleRepository;
 import com.example.scheduledevelop.domain.user.dto.*;
@@ -21,13 +22,16 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
-
+    private final PasswordEncoder passwordEncoder;
     @Transactional
     public User login(LoginRequestDto requestDto, HttpServletRequest request) {
         // 이메일, 비밀번호로 사용자 찾기
         User user = userRepository.findByEmail(requestDto.getEmail())
-                .filter(user1 -> requestDto.getPassword().equals(user1.getPassword()))
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "이메일 또는 비밀번호가 잘못되었습니다."));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "이메일을 찾을 수 없습니다."));
+
+        if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
+        }
 
         // 세션 가져오기 (없으면 생성)
         HttpSession session = request.getSession(true);
@@ -45,10 +49,13 @@ public class UserService {
         return ResponseEntity.ok("로그아웃 성공");
     }
 
-
+    @Transactional
     public UserResponseDto createUser(UserCreateRequestDto dto) {
-        User user = new User(dto.getUsername(), dto.getEmail(), dto.getPassword());
+        String encodedPassword = passwordEncoder.encode(dto.getPassword());
+
+        User user = new User(dto.getUsername(), dto.getEmail(), encodedPassword);
         User savedUser = userRepository.save(user);
+
         return new UserResponseDto(savedUser);
     }
 
@@ -79,6 +86,7 @@ public class UserService {
 
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 유저를 찾을 수 없습니다."));
+
         //이름, 이메일 값이 존재할 경우에만 업데이트
         if(dto.getUsername() != null && !dto.getUsername().trim().isEmpty()){
             user.updateUsername(dto.getUsername());
@@ -104,9 +112,10 @@ public class UserService {
         User findUser = userRepository.findUserById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 사용자를 찾을 수 없습니다."));
 
-        if(!findUser.getPassword().equals(oldPassword)){
+        if (!passwordEncoder.matches(oldPassword, findUser.getPassword())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
         }
+
         findUser.updatePassword(newPassword);
     }
 
