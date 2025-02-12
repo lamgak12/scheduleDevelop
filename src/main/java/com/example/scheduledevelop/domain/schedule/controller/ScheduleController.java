@@ -4,6 +4,7 @@ import com.example.scheduledevelop.domain.schedule.dto.ScheduleCreateRequestDto;
 import com.example.scheduledevelop.domain.schedule.dto.ScheduleResponseDto;
 import com.example.scheduledevelop.domain.schedule.dto.ScheduleUpdateRequestDto;
 import com.example.scheduledevelop.domain.schedule.service.ScheduleService;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,8 +21,9 @@ public class ScheduleController {
 
     @PostMapping
     public ResponseEntity<ScheduleResponseDto> createSchedule(
-           @Valid @RequestBody ScheduleCreateRequestDto requestDto){
-        ScheduleResponseDto responseDto = scheduleService.createSchedule(requestDto);
+           @Valid @RequestBody ScheduleCreateRequestDto requestDto,
+           HttpSession session){
+        ScheduleResponseDto responseDto = scheduleService.createSchedule(requestDto, session);
         return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
     }
 
@@ -40,14 +42,15 @@ public class ScheduleController {
     @PatchMapping("/{id}")
     public ResponseEntity<ScheduleResponseDto> updateSchedule(
             @PathVariable Long id,
-            @Valid @RequestBody ScheduleUpdateRequestDto dto){
-        ScheduleResponseDto responseDto = scheduleService.updateSchedule(id, dto);
+            @Valid @RequestBody ScheduleUpdateRequestDto dto,
+            HttpSession session){
+        ScheduleResponseDto responseDto = scheduleService.updateSchedule(id, dto, session);
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void>deleteSchedule(@PathVariable Long id){
-        scheduleService.deleteSchedule(id);
+    public ResponseEntity<Void>deleteSchedule(@PathVariable Long id, HttpSession session){
+        scheduleService.deleteSchedule(id, session);
      return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
