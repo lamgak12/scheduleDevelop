@@ -20,7 +20,7 @@ public class Comment extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "schedule_id")
-    private Schedule schedules;
+    private Schedule schedule;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -29,5 +29,14 @@ public class Comment extends BaseEntity {
     @Column(nullable = false)
     @Size(max = 200)
     private String contents;
-    
+
+    public Comment(Schedule schedule, User user, String content) {
+        this.schedule = schedule;
+        this.users = user;
+        this.contents = content;
+    }
+
+    public void updateContents(String contents){
+        this.contents = contents;
+    }
 }

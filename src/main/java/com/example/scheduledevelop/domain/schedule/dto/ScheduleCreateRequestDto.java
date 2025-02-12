@@ -8,9 +8,6 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class ScheduleCreateRequestDto {
-    @Size(min = 2, max = 10, message = "작성자는 2~10자로 입력해야 합니다.")
-    @NotBlank(message = "작성자는 필수 입력값입니다.")
-    private String writer;
     @Size(min = 5, max = 30, message = "제목은 5~30자로 입력해야 합니다.")
     @NotBlank(message = "제목은 필수 입력값입니다.")
     private String title;
