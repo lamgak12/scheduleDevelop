@@ -1,9 +1,13 @@
 package com.example.scheduledevelop.domain.user.entity;
 
+import com.example.scheduledevelop.domain.schedule.entity.Schedule;
 import com.example.scheduledevelop.global.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Entity
@@ -26,9 +30,12 @@ public class User extends BaseEntity {
         this.password = password;
     }
 
-    public void update(String newUsername, String newEmail) {
-        this.username = newUsername;
-        this.email = newEmail;
+    public void updateUsername(String username) {
+        this.username = username;
+    }
+
+    public void updateEmail(String email) {
+        this.email = email;
     }
 
     public void updatePassword(String password) {

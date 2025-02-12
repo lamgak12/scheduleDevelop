@@ -1,10 +1,8 @@
 package com.example.scheduledevelop.domain.user.controller;
 
-import com.example.scheduledevelop.domain.user.dto.UserCreateRequestDto;
-import com.example.scheduledevelop.domain.user.dto.UserPasswordUpdateRequestDto;
-import com.example.scheduledevelop.domain.user.dto.UserResponseDto;
-import com.example.scheduledevelop.domain.user.dto.UserUpdateRequestDto;
+import com.example.scheduledevelop.domain.user.dto.*;
 import com.example.scheduledevelop.domain.user.service.UserService;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -43,26 +41,31 @@ public class UserController {
     @PatchMapping("/{id}")
     public ResponseEntity<UserResponseDto> updateUser(
             @PathVariable Long id,
-            @RequestBody UserUpdateRequestDto requestDto
+            @RequestBody UserUpdateRequestDto requestDto,
+            HttpSession session
             ){
-        UserResponseDto responseDto = userService.updateUser(id, requestDto);
+        UserResponseDto responseDto = userService.updateUser(id, session, requestDto);
       return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 
     @PatchMapping("/{id}/password")
     public ResponseEntity<Void>updateUserPassword(
         @PathVariable Long id,
-        @RequestBody UserPasswordUpdateRequestDto requestDto
+        @RequestBody UserPasswordUpdateRequestDto requestDto,
+        HttpSession session
     ){
-        userService.updatePassword(id, requestDto.getEmail(), requestDto.getOldPassword(), requestDto.getNewPassword());
+        userService.updatePassword(id, session, requestDto.getOldPassword(), requestDto.getNewPassword());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void>deleteUser(
-            @PathVariable Long id
+            @PathVariable Long id,
+            @RequestBody UserDeleteRequestDto requestDto,
+            HttpSession session
+
     ){
-        userService.deleteUser(id);
+        userService.deleteUser(id, session, requestDto.getPassword());
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
