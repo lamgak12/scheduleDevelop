@@ -1,16 +1,19 @@
 package com.example.scheduledevelop.domain.schedule.controller;
 
-import com.example.scheduledevelop.domain.schedule.dto.ScheduleCreateRequestDto;
-import com.example.scheduledevelop.domain.schedule.dto.ScheduleResponseDto;
-import com.example.scheduledevelop.domain.schedule.dto.ScheduleUpdateRequestDto;
+import com.example.scheduledevelop.domain.schedule.dto.request.ScheduleCreateRequestDto;
+import com.example.scheduledevelop.domain.schedule.dto.response.ScheduleResponseDto;
+import com.example.scheduledevelop.domain.schedule.dto.request.ScheduleUpdateRequestDto;
 import com.example.scheduledevelop.domain.schedule.service.ScheduleService;
+import com.example.scheduledevelop.global.PageResponseDto;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/schedules")
@@ -20,14 +23,17 @@ public class ScheduleController {
 
     @PostMapping
     public ResponseEntity<ScheduleResponseDto> createSchedule(
-           @Valid @RequestBody ScheduleCreateRequestDto requestDto){
-        ScheduleResponseDto responseDto = scheduleService.createSchedule(requestDto);
+            @Valid @RequestBody ScheduleCreateRequestDto requestDto,
+            HttpSession session){
+        ScheduleResponseDto responseDto = scheduleService.createSchedule(requestDto, session);
         return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
     }
 
     @GetMapping
-    public ResponseEntity<List<ScheduleResponseDto>> findAllSchedules(){
-        List<ScheduleResponseDto> schedules = scheduleService.findAllSchedules();
+    public ResponseEntity<PageResponseDto<ScheduleResponseDto>> findAllSchedules(
+            @PageableDefault(sort = {"createdAt"}, direction = Sort.Direction.DESC)Pageable pageable
+            ){
+        PageResponseDto<ScheduleResponseDto> schedules = scheduleService.findAllSchedules(pageable);
         return new ResponseEntity<>(schedules, HttpStatus.OK);
     }
 
@@ -37,16 +43,18 @@ public class ScheduleController {
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<ScheduleResponseDto> updateSchedule(
             @PathVariable Long id,
-            @Valid @RequestBody ScheduleUpdateRequestDto dto){
-        ScheduleResponseDto responseDto = scheduleService.updateSchedule(id, dto);
+            @Valid @RequestBody ScheduleUpdateRequestDto dto,
+            HttpSession session){
+        ScheduleResponseDto responseDto = scheduleService.updateSchedule(id, dto, session);
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
+
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void>deleteSchedule(@PathVariable Long id){
-        scheduleService.deleteSchedule(id);
-     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    public ResponseEntity<Void>deleteSchedule(@PathVariable Long id, HttpSession session){
+        scheduleService.deleteSchedule(id, session);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
