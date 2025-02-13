@@ -1,4 +1,4 @@
-package com.example.scheduledevelop.domain.comment.dto;
+package com.example.scheduledevelop.domain.comment.dto.response;
 
 import com.example.scheduledevelop.domain.comment.entity.Comment;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -20,7 +20,7 @@ public class CommentResponseDto {
 
     public CommentResponseDto(Comment comment) {
         this.id = comment.getId();
-        this.username = comment.getUsers().getUsername();
+        this.username = comment.getUser().getUsername();
         this.contents = comment.getContents();
         this.createdAt = comment.getCreatedAt();
         this.updatedAt = comment.getUpdatedAt();

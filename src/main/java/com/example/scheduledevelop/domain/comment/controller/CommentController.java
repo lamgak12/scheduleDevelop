@@ -1,16 +1,15 @@
 package com.example.scheduledevelop.domain.comment.controller;
 
-import com.example.scheduledevelop.domain.comment.dto.CommentCreateRequestDto;
-import com.example.scheduledevelop.domain.comment.dto.CommentResponseDto;
-import com.example.scheduledevelop.domain.comment.dto.CommentUpdateRequestDto;
+import com.example.scheduledevelop.domain.comment.dto.request.CommentCreateRequestDto;
+import com.example.scheduledevelop.domain.comment.dto.response.CommentResponseDto;
+import com.example.scheduledevelop.domain.comment.dto.request.CommentUpdateRequestDto;
 import com.example.scheduledevelop.domain.comment.service.CommentService;
+import com.example.scheduledevelop.global.PageResponseDto;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/schedules")
@@ -29,8 +28,11 @@ public class CommentController {
     }
 
     @GetMapping("/{scheduleId}/comments")
-    public ResponseEntity<List<CommentResponseDto>> getCommentsBySchedule(@PathVariable Long scheduleId) {
-        List<CommentResponseDto> comments = commentService.findAllComment(scheduleId);
+    public ResponseEntity<PageResponseDto<CommentResponseDto>> getCommentsBySchedule(
+            @PathVariable Long scheduleId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        PageResponseDto<CommentResponseDto> comments = commentService.findAllComment(scheduleId, page, size);
         return new ResponseEntity<>(comments, HttpStatus.OK);
     }
 
@@ -52,7 +54,7 @@ public class CommentController {
             HttpSession session
     ) {
         commentService.deleteComment(scheduleId, commentId, session);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
 }

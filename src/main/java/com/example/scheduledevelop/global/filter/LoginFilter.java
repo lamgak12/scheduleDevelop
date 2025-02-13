@@ -1,4 +1,4 @@
-package com.example.scheduledevelop.filter;
+package com.example.scheduledevelop.global.filter;
 
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
@@ -29,7 +29,10 @@ public class LoginFilter implements Filter {
 
         HttpSession session = httpRequest.getSession(false);
         if (session == null || session.getAttribute("userId") == null) {
-            httpResponse.sendError(HttpStatus.UNAUTHORIZED.value(), "로그인이 필요합니다.");
+            httpResponse.setContentType("application/json");
+            httpResponse.setCharacterEncoding("UTF-8");
+            httpResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            httpResponse.getWriter().write("{\"error\": \"로그인이 필요합니다.\"}");
             return;
         }
 

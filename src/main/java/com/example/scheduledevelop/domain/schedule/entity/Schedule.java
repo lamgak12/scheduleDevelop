@@ -1,12 +1,14 @@
 package com.example.scheduledevelop.domain.schedule.entity;
 
+import com.example.scheduledevelop.domain.comment.entity.Comment;
 import com.example.scheduledevelop.domain.user.entity.User;
 import com.example.scheduledevelop.global.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Entity
@@ -26,6 +28,9 @@ public class Schedule extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="user_id", nullable = false)
     private User user;
+
+    @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> comments = new ArrayList<>();
 
     public Schedule(String title, String contents, User user) {
         this.title = title;

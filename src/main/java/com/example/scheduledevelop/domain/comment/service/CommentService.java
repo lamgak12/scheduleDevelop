@@ -1,23 +1,25 @@
 package com.example.scheduledevelop.domain.comment.service;
 
-import com.example.scheduledevelop.domain.comment.dto.CommentCreateRequestDto;
-import com.example.scheduledevelop.domain.comment.dto.CommentResponseDto;
-import com.example.scheduledevelop.domain.comment.dto.CommentUpdateRequestDto;
+import com.example.scheduledevelop.domain.comment.dto.request.CommentCreateRequestDto;
+import com.example.scheduledevelop.domain.comment.dto.request.CommentUpdateRequestDto;
+import com.example.scheduledevelop.domain.comment.dto.response.CommentResponseDto;
 import com.example.scheduledevelop.domain.comment.entity.Comment;
 import com.example.scheduledevelop.domain.comment.repository.CommentRepository;
 import com.example.scheduledevelop.domain.schedule.entity.Schedule;
 import com.example.scheduledevelop.domain.schedule.repository.ScheduleRepository;
 import com.example.scheduledevelop.domain.user.entity.User;
 import com.example.scheduledevelop.domain.user.repository.UserRepository;
+import com.example.scheduledevelop.global.PageResponseDto;
+import com.example.scheduledevelop.global.exception.CustomException;
+import com.example.scheduledevelop.global.exception.ErrorCode;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -32,9 +34,9 @@ public class CommentService {
         Long sessionUserId = (Long) session.getAttribute("userId");
 
         User user = userRepository.findUserById(sessionUserId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
         Schedule schedule = scheduleRepository.findScheduleById(scheduleId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 일정을 찾을 수 없습니다."));
+                .orElseThrow(() -> new CustomException(ErrorCode.SCHEDULE_NOT_FOUND));
 
         Comment comment = new Comment(schedule, user, requestDto.getContents());
         commentRepository.save(comment);
@@ -43,13 +45,15 @@ public class CommentService {
     }
 
     @Transactional(readOnly = true)
-    public List<CommentResponseDto> findAllComment(Long scheduleId){
+    public PageResponseDto<CommentResponseDto> findAllComment(Long scheduleId, int page, int size){
         Schedule schedule = scheduleRepository.findScheduleById(scheduleId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 일정을 찾을 수 없습니다."));
+                .orElseThrow(() -> new CustomException(ErrorCode.SCHEDULE_NOT_FOUND));
 
-        return commentRepository.findBySchedule(schedule).stream()
-                .map(CommentResponseDto::new)
-                .collect(Collectors.toList());
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
+
+        Page<CommentResponseDto> commentPage = commentRepository.findBySchedule(schedule, pageable).map(CommentResponseDto::new);
+
+        return new PageResponseDto<>(commentPage);
     }
 
     @Transactional
@@ -58,16 +62,16 @@ public class CommentService {
 
         // 댓글 존재 여부 확인
         Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 댓글을 찾을 수 없습니다."));
+                .orElseThrow(() -> new CustomException(ErrorCode.COMMENT_NOT_FOUND));
 
         // 댓글이 해당 일정에 속하는지 확인
         if (!comment.getSchedule().getId().equals(scheduleId)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "해당 일정에 속하지 않는 댓글입니다.");
+            throw new CustomException(ErrorCode.COMMENT_SCHEDULE_MISMATCH);
         }
 
         // 본인이 작성한 댓글인지 확인
-        if (!comment.getUsers().getId().equals(sessionUserId)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "자신이 작성한 댓글만 수정할 수 있습니다.");
+        if (!comment.getUser().getId().equals(sessionUserId)) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED_COMMENT_ACCESS);
         }
 
         // 댓글 내용 업데이트
@@ -82,16 +86,16 @@ public class CommentService {
 
         // 댓글 존재 여부 확인
         Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 댓글을 찾을 수 없습니다."));
+                .orElseThrow(() -> new CustomException(ErrorCode.COMMENT_NOT_FOUND));
 
         // 댓글이 해당 일정에 속하는지 확인
         if (!comment.getSchedule().getId().equals(scheduleId)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "해당 일정에 속하지 않는 댓글입니다.");
+            throw new CustomException(ErrorCode.COMMENT_SCHEDULE_MISMATCH);
         }
 
         // 본인이 작성한 댓글인지 확인
-        if (!comment.getUsers().getId().equals(sessionUserId)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "자신이 작성한 댓글만 삭제할 수 있습니다.");
+        if (!comment.getUser().getId().equals(sessionUserId)) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED_COMMENT_ACCESS);
         }
 
         commentRepository.delete(comment);

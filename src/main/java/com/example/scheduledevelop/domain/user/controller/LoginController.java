@@ -1,6 +1,6 @@
 package com.example.scheduledevelop.domain.user.controller;
 
-import com.example.scheduledevelop.domain.user.dto.LoginRequestDto;
+import com.example.scheduledevelop.domain.user.dto.request.LoginRequestDto;
 import com.example.scheduledevelop.domain.user.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;

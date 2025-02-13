@@ -1,4 +1,4 @@
-package com.example.scheduledevelop.domain.user.dto;
+package com.example.scheduledevelop.domain.user.dto.response;
 
 import com.example.scheduledevelop.domain.user.entity.User;
 import com.fasterxml.jackson.annotation.JsonFormat;

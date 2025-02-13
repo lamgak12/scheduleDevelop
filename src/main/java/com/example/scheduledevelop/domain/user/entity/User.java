@@ -1,5 +1,6 @@
 package com.example.scheduledevelop.domain.user.entity;
 
+import com.example.scheduledevelop.domain.comment.entity.Comment;
 import com.example.scheduledevelop.domain.schedule.entity.Schedule;
 import com.example.scheduledevelop.global.BaseEntity;
 import jakarta.persistence.*;
@@ -12,7 +13,7 @@ import java.util.List;
 @Getter
 @Entity
 @NoArgsConstructor
-@Table(name = "users")
+@Table(name = "users", uniqueConstraints = {@UniqueConstraint(columnNames = "email")})
 public class User extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,6 +24,11 @@ public class User extends BaseEntity {
     private String email;
     @Column(nullable = false)
     private String password;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Schedule> schedules = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Comment> comments = new ArrayList<>();
 
     public User(String username, String email, String password) {
         this.username = username;
