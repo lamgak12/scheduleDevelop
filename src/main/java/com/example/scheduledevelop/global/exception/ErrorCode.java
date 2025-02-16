@@ -7,7 +7,9 @@ import org.springframework.http.HttpStatus;
 public enum ErrorCode {
     // 유저 관련 오류
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 유저를 찾을 수 없습니다."),
+    UNAUTHORIZED_USER(HttpStatus.UNAUTHORIZED,"로그인 하셔야 합니다."),
     EMAIL_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 존재하는 이메일입니다."),
+    INCORRECT_EMAIL(HttpStatus.UNAUTHORIZED, "존재하지 않는 이메일입니다."),
     INCORRECT_PASSWORD(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다."),
     ALREADY_LOGGED_IN(HttpStatus.CONFLICT, "이미 로그인 중인 사용자입니다."),
     UNAUTHORIZED_ACCESS(HttpStatus.FORBIDDEN, "접근 권한이 없습니다."),
@@ -15,6 +17,7 @@ public enum ErrorCode {
     // 일정 관련 오류
     SCHEDULE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 일정을 찾을 수 없습니다."),
     UNAUTHORIZED_SCHEDULE_ACCESS(HttpStatus.FORBIDDEN, "자신이 작성한 일정만 수정 또는 삭제할 수 있습니다."),
+    INVALID_UPDATE_REQUEST(HttpStatus.BAD_REQUEST,"수정할 데이터가 없습니다. 제목 또는 내용을 입력하세요."),
 
     // 댓글 관련 오류
     COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 댓글을 찾을 수 없습니다."),

@@ -4,38 +4,45 @@ import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.http.HttpStatus;
 
 import java.io.IOException;
+import java.util.Set;
 
 public class LoginFilter implements Filter {
 
-    private static final String[] EXCLUDED_PATHS = {"/","/login", "/logout"};
+    private static final Set<String> EXCLUDED_PATHS = Set.of("/login", "/logout", "/signup");
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
-
         String requestURI = httpRequest.getRequestURI();
+        String method = httpRequest.getMethod();
 
-        // 로그인, 회원가입 요청은 필터 예외 처리
-        for (String path : EXCLUDED_PATHS) {
-            if (requestURI.startsWith(path)) {
-                chain.doFilter(request, response);
-                return;
-            }
+        // Public API 예외처리
+        if (isPublicAPI(requestURI, method)) {
+            chain.doFilter(request, response);
+            return;
         }
 
+        // 세션 검사
         HttpSession session = httpRequest.getSession(false);
-        if (session == null || session.getAttribute("userId") == null) {
-            httpResponse.setContentType("application/json");
-            httpResponse.setCharacterEncoding("UTF-8");
-            httpResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            httpResponse.getWriter().write("{\"error\": \"로그인이 필요합니다.\"}");
+        if (session == null || session.getAttribute(Const.LOGIN_USER) == null) {
+            sendUnauthorizedResponse(httpResponse);
             return;
         }
 
         chain.doFilter(request, response);
+    }
+
+    private boolean isPublicAPI(String uri, String method) {
+        return EXCLUDED_PATHS.contains(uri) || method.equals("GET");
+    }
+
+    private void sendUnauthorizedResponse(HttpServletResponse response) throws IOException {
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.getWriter().write("{\"error\": \"로그인이 필요합니다.\"}");
     }
 }
