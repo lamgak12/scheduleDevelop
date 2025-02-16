@@ -83,9 +83,14 @@ scheduleDevelop📁
 
 # ERD & API 명세서
 <details>
+        
 # ERD
+
 <summary>ERD</summary>
-![img.png](img.png)
+
+<img src="https://github.com/user-attachments/assets/f03770ca-8ba5-45b6-a01f-fa25cd75d317">
+
+
 </details>
 <details>
 <summary>API 명세서</summary>
